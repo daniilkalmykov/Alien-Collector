@@ -12,8 +12,11 @@ namespace Player
         [SerializeField] private List<Target> _targets = new();
         [SerializeField] private MoveCubeBlinder _moveCubeBlinder;
         
-        private Target _currentTarget;
+        private readonly List<Target> _currentTargets = new();
         
+        private Target _currentTarget;
+        private bool _isWaiting;
+
         [field: SerializeField] public float Speed { get; private set; }
 
         private void OnDisable()
@@ -23,9 +26,17 @@ namespace Player
 
         private void Update()
         {
-            if (_currentTarget == null || transform.position == _currentTarget.transform.position)
+            if (_currentTarget == null)
                 return;
 
+            if (transform.position == _currentTarget.transform.position && _currentTargets.Count > 0)
+            {
+                _currentTargets.RemoveAt(0);
+
+                if (_currentTargets.Count > 0)
+                    _currentTarget = _currentTargets[0];
+            }
+            
             Move(Time.deltaTime);
         }
 
@@ -44,27 +55,20 @@ namespace Player
 
         private void OnMovesCountSet(int movesCount)
         {
-            SetTarget(movesCount);
+            SetCurrentTargets(movesCount);
         }
 
-        private void SetTarget(int movesCount)
+        private void SetCurrentTargets(int movesCount)
         {
             var currentTargetId = _currentTarget == null ? 0 : _currentTarget.Id;
-
-            int newTargetId;
             
-            if (currentTargetId + movesCount > _targets.Count)
+            for (var i = 0; i < movesCount; i++)
             {
-                movesCount -= _targets.Count - currentTargetId;
-
-                newTargetId = movesCount;
-            }
-            else
-            {
-                newTargetId = currentTargetId + movesCount;
+                currentTargetId = currentTargetId % _targets.Count + 1;
+                _currentTargets.Add(_targets.FirstOrDefault(target => target.Id == currentTargetId));
             }
 
-            _currentTarget = _targets.FirstOrDefault(target => target.Id == newTargetId);
+            _currentTarget = _currentTargets[0];
         }
     }
 }
