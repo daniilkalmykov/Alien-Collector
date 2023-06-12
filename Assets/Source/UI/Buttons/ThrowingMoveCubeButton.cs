@@ -1,11 +1,15 @@
 using Blinders;
-using UnityEngine;
 
 namespace UI.Buttons
 {
     public sealed class ThrowingMoveCubeButton : GameButton
     {
-        [SerializeField] private MovesCountBlinder _movesCountBlinder;
+        private MoveCubeBlinder _moveCubeBlinder;
+        
+        public void Init(MoveCubeBlinder moveCubeBlinder)
+        {
+            _moveCubeBlinder = moveCubeBlinder;
+        }
         
         protected override void OnClick()
         {
@@ -14,7 +18,7 @@ namespace UI.Buttons
 
         private void ThrowCube()
         {
-            _movesCountBlinder.MoveCube.Throw();
+            _moveCubeBlinder.MoveCube.Throw();
         }
     }
 }

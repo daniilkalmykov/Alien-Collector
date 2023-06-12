@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Blinders
 {
-    public sealed class MovesCountBlinder : MonoBehaviour
+    public sealed class MoveCubeBlinder : MonoBehaviour
     {
         public MoveCube MoveCube { get; private set; }
 

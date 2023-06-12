@@ -7,8 +7,7 @@ namespace UI.Views
     [RequireComponent(typeof(TMP_Text))]
     public sealed class MovesCountsView : MonoBehaviour
     {
-        [SerializeField] private MovesCountBlinder _movesCountBlinder; 
-            
+        private MoveCubeBlinder _moveCubeBlinder; 
         private TMP_Text _movesCount;
 
         private void Awake()
@@ -16,14 +15,16 @@ namespace UI.Views
             _movesCount = GetComponent<TMP_Text>();
         }
 
-        private void OnEnable()
-        {
-            _movesCountBlinder.MoveCube.MovesCountSet += OnMovesCountSet;
-        }
-
         private void OnDisable()
         {
-            _movesCountBlinder.MoveCube.MovesCountSet -= OnMovesCountSet;
+            _moveCubeBlinder.MoveCube.MovesCountSet -= OnMovesCountSet;
+        }
+
+        public void Init(MoveCubeBlinder moveCubeBlinder)
+        {
+            _moveCubeBlinder = moveCubeBlinder;
+            
+            _moveCubeBlinder.MoveCube.MovesCountSet += OnMovesCountSet;
         }
 
         private void OnMovesCountSet(int movesCount)
