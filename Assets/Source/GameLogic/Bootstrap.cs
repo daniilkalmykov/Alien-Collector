@@ -1,5 +1,4 @@
 using Blinders;
-using Models;
 using Player;
 using UI.Buttons;
 using UI.Views;
@@ -18,8 +17,8 @@ namespace GameLogic
         {
             _moveCubeBlinder.Init();
             _movesCountsView.Init(_moveCubeBlinder);
-            _playerMovement.Init(_moveCubeBlinder);
             _throwingMoveCubeButton.Init(_moveCubeBlinder);
+            _playerMovement.InitTargetSetter(_moveCubeBlinder.MoveCube);
         }
     }
 }

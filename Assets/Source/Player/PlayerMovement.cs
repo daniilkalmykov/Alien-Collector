@@ -1,74 +1,77 @@
-using System.Collections.Generic;
-using System.Linq;
-using Blinders;
+using System;
+using Enums;
 using GameLogic;
 using Interfaces;
+using Models;
 using UnityEngine;
 
 namespace Player
 {
     public sealed class PlayerMovement : MonoBehaviour , IMoveable
     {
-        [SerializeField] private List<Target> _targets = new();
-        [SerializeField] private MoveCubeBlinder _moveCubeBlinder;
-        
-        private readonly List<Target> _currentTargets = new();
-        
-        private Target _currentTarget;
+        [SerializeField] private Target _startTarget;
+
+        private float _startSpeed;
         private bool _isWaiting;
 
+        public event Action<float> SpeedChanged;
+        
         [field: SerializeField] public float Speed { get; private set; }
+        
+        public PlayerTargetSetter TargetSetter { get; private set; }
 
         private void OnDisable()
         {
-            _moveCubeBlinder.MoveCube.MovesCountSet -= OnMovesCountSet;
+            TargetSetter.Deactivate();
+        }
+
+        private void Start()
+        {
+            _startSpeed = Speed;
         }
 
         private void Update()
         {
-            if (_currentTarget == null)
+            if (TargetSetter.CurrentTarget == null || TargetSetter.MovesCount <= 0)
                 return;
 
-            if (transform.position == _currentTarget.transform.position && _currentTargets.Count > 0)
+            if (transform.position == TargetSetter.CurrentTarget.transform.position)
             {
-                _currentTargets.RemoveAt(0);
-
-                if (_currentTargets.Count > 0)
-                    _currentTarget = _currentTargets[0];
+                if (TargetSetter.CurrentTarget.TargetStatus == TargetStatus.ChoosingDirection && _isWaiting == false)
+                {
+                    _isWaiting = true;
+                    Speed = 0;
+                    
+                    SpeedChanged?.Invoke(Speed);
+                }
+                else
+                {
+                    TargetSetter.SetCurrentTarget(0);
+                }
+                
+                TargetSetter.TryReduceMovesCount();
             }
             
             Move(Time.deltaTime);
         }
 
-        public void Move(float deltaTime)
+        public void InitTargetSetter(MoveCube moveCube)
         {
-            transform.position =
-                Vector3.MoveTowards(transform.position, _currentTarget.transform.position, Speed * deltaTime);
+            TargetSetter = new PlayerTargetSetter(_startTarget, moveCube);
         }
         
-        public void Init(MoveCubeBlinder moveCubeBlinder)
+        public void Move(float deltaTime)
         {
-            _moveCubeBlinder = moveCubeBlinder;
+            var targetPosition = TargetSetter.CurrentTarget.transform.position;
             
-            _moveCubeBlinder.MoveCube.MovesCountSet += OnMovesCountSet;
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, Speed * deltaTime);
         }
-
-        private void OnMovesCountSet(int movesCount)
+        
+        public void ResetSpeed()
         {
-            SetCurrentTargets(movesCount);
-        }
-
-        private void SetCurrentTargets(int movesCount)
-        {
-            var currentTargetId = _currentTarget == null ? 0 : _currentTarget.Id;
+            Speed = _startSpeed;
             
-            for (var i = 0; i < movesCount; i++)
-            {
-                currentTargetId = currentTargetId % _targets.Count + 1;
-                _currentTargets.Add(_targets.FirstOrDefault(target => target.Id == currentTargetId));
-            }
-
-            _currentTarget = _currentTargets[0];
+            SpeedChanged?.Invoke(Speed);
         }
     }
 }
