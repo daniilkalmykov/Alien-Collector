@@ -40,7 +40,11 @@ namespace Player
 
         private void Update()
         {
-            if (TargetSetter.CurrentTarget == null)
+            var currentTarget = TargetSetter.CurrentTarget;
+            
+            transform.LookAt(currentTarget.transform);
+            
+            if (currentTarget == null)
                 return;
 
             if (TargetSetter.MovesCount <= 0)
@@ -49,16 +53,19 @@ namespace Player
                 return;
             }
 
-            _animator.SetBool(AnimatorParameters.IsWalking, true);
-
-            if (transform.position == TargetSetter.CurrentTarget.transform.position)
+            if (transform.position == currentTarget.transform.position)
             {
-                if (TargetSetter.CurrentTarget.TargetStatus == TargetStatus.ChoosingDirection && _isWaiting == false)
+                if (currentTarget.TargetStatus == TargetStatus.ChoosingDirection)
                 {
-                    _isWaiting = true;
-                    Speed = 0;
-                    
-                    SpeedChanged?.Invoke(Speed);
+                    _animator.SetBool(AnimatorParameters.IsWalking, false);
+
+                    if (_isWaiting == false) 
+                    {
+                        _isWaiting = true;
+                        Speed = 0;
+
+                        SpeedChanged?.Invoke(Speed);
+                    }
                 }
                 else
                 {
@@ -68,8 +75,9 @@ namespace Player
                 TargetSetter.TryReduceMovesCount();
             }
             
+            _animator.SetBool(AnimatorParameters.IsWalking, true);
+            
             Move(Time.deltaTime);
-            transform.LookAt(TargetSetter.CurrentTarget.transform);
         }
 
         public void InitTargetSetter(MoveCube moveCube)
@@ -87,8 +95,9 @@ namespace Player
         public void ResetSpeed()
         {
             Speed = _startSpeed;
-            
             SpeedChanged?.Invoke(Speed);
+
+            _isWaiting = false;
         }
     }
 }

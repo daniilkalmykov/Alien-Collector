@@ -21,6 +21,7 @@ namespace GameLogic
         
         private void OnSpeedChanged(float speed)
         {
+            print(speed);
             ChangeButtonsVisibility(speed == 0);
         }
 
