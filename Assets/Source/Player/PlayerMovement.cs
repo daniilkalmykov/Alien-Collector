@@ -1,4 +1,5 @@
 using System;
+using Constants;
 using Enums;
 using GameLogic;
 using Interfaces;
@@ -7,18 +8,25 @@ using UnityEngine;
 
 namespace Player
 {
+    [RequireComponent(typeof(Animator))]
     public sealed class PlayerMovement : MonoBehaviour , IMoveable
     {
         [SerializeField] private Target _startTarget;
-
+        
         private float _startSpeed;
         private bool _isWaiting;
+        private Animator _animator;
 
         public event Action<float> SpeedChanged;
         
         [field: SerializeField] public float Speed { get; private set; }
         
         public PlayerTargetSetter TargetSetter { get; private set; }
+
+        private void Awake()
+        {
+            _animator = GetComponent<Animator>();
+        }
 
         private void OnDisable()
         {
@@ -32,8 +40,16 @@ namespace Player
 
         private void Update()
         {
-            if (TargetSetter.CurrentTarget == null || TargetSetter.MovesCount <= 0)
+            if (TargetSetter.CurrentTarget == null)
                 return;
+
+            if (TargetSetter.MovesCount <= 0)
+            {
+                _animator.SetBool(AnimatorParameters.IsWalking, false);
+                return;
+            }
+
+            _animator.SetBool(AnimatorParameters.IsWalking, true);
 
             if (transform.position == TargetSetter.CurrentTarget.transform.position)
             {
@@ -53,6 +69,7 @@ namespace Player
             }
             
             Move(Time.deltaTime);
+            transform.LookAt(TargetSetter.CurrentTarget.transform);
         }
 
         public void InitTargetSetter(MoveCube moveCube)
