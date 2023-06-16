@@ -1,17 +1,16 @@
-using System;
 using GameLogic;
-using Player;
-using UI.Buttons;
+using Interfaces;
 using UnityEngine;
 
-namespace UI
+namespace UI.Buttons
 {
     public abstract class ShootButton : GameButton
     {
         [SerializeField] private ShootButton _shootButton;
         
-        [field: SerializeField] protected PlayerShooter PlayerShooter { get; private set; }
         [field: SerializeField] public ShootersDistributor ShootersDistributor { get; private set; }
+        
+        protected IPlayerShooter PlayerShooter { get; private set; }
 
         protected override void OnEnable()
         {
@@ -33,8 +32,10 @@ namespace UI
             _shootButton.Button.interactable = false;
         }
 
-        private void OnPlayerPrepared()
+        private void OnPlayerPrepared(IPlayerShooter playerShooter)
         {
+            PlayerShooter = playerShooter;
+            
             Button.interactable = true;
             _shootButton.Button.interactable = true;
         }

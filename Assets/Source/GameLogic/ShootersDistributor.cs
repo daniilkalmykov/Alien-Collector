@@ -15,17 +15,15 @@ namespace GameLogic
         [SerializeField] private List<Shooter> _shooters;
         [SerializeField] private float _delay;
         
-        private readonly List<IShooter> _enemyShooters = new();
+        private readonly List<IEnemyShooter> _enemyShooters = new();
+        private readonly List<IPlayerShooter> _playerShooters = new();
         
-        private PlayerShooter _playerShooter;
-
-        public event Action PlayerPrepared;
+        public event Action<IPlayerShooter> PlayerPrepared;
 
         private void Awake()
         {
-            FillEnemyShooters();
-
-            _playerShooter = (PlayerShooter)_shooters.FirstOrDefault(shooter => shooter is PlayerShooter);
+            FillShooters(_playerShooters);
+            FillShooters(_enemyShooters);
         }
 
         private void OnEnable()
@@ -40,30 +38,44 @@ namespace GameLogic
                 shooter.Shot -= OnShot;
         }
 
+        private void Start()
+        {
+            PlayerPrepared?.Invoke(GetRandomPlayer());
+        }
+
         public EnemyShooter GetRandomEnemy()
         {
-            if (_enemyShooters.Count == 0)
-                FillEnemyShooters();
-            
-            return (EnemyShooter)_enemyShooters[Random.Range(0, _enemyShooters.Count)];
+            return (EnemyShooter)GetRandomShooter(_enemyShooters);
+        }
+
+        private IShooter GetRandomShooter<T>(List<T> list)
+        {
+            if (list.Count == 0)
+                FillShooters(list);
+
+            return (IShooter)list[Random.Range(0, list.Count)];
         }
         
         private void OnShot(IShooter shooter)
         {
-            if (shooter is IPlayerShooter)
+            if (shooter is IPlayerShooter playerShooter)
             {
+                _playerShooters.Remove(playerShooter);
                 SetNextEnemyShooter();
                 return;
             }
 
-            _enemyShooters.Remove(shooter);
-            PlayerPrepared?.Invoke();
+            _enemyShooters.Remove((IEnemyShooter)shooter);
+
+            if (_playerShooters.Count == 0)
+                FillShooters(_playerShooters);
+            
+            PlayerPrepared?.Invoke(GetRandomPlayer());
         }
 
-        private void FillEnemyShooters()
+        private void FillShooters<T>(List<T> list)
         {
-            foreach (var shooter in _shooters.OfType<IEnemyShooter>())
-                _enemyShooters.Add(shooter);
+            list.AddRange(_shooters.OfType<T>());
         }
 
         private void SetNextEnemyShooter()
@@ -73,12 +85,17 @@ namespace GameLogic
 
         private IEnumerator WaitToSetNextEnemyShooter()
         {
-            if (_enemyShooters.Count == 0)
-                FillEnemyShooters();
-
             yield return new WaitForSeconds(_delay);
             
-            _enemyShooters[0].Shoot(_playerShooter.transform.position);
+            if (_enemyShooters.Count == 0)
+                FillShooters(_enemyShooters);
+
+            _enemyShooters[0].Shoot(GetRandomPlayer().transform.position);
+        }
+
+        private PlayerShooter GetRandomPlayer()
+        {
+            return (PlayerShooter)GetRandomShooter(_playerShooters);
         }
     }
 }
