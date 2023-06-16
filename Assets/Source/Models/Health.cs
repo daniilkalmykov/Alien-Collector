@@ -1,5 +1,6 @@
 using System;
 using Interfaces;
+using UnityEngine;
 
 namespace Models
 {
@@ -20,6 +21,7 @@ namespace Models
                 throw new ArgumentNullException();
 
             CurrentHealth -= damage;
+            Debug.Log(CurrentHealth);
         }
     }
 }
