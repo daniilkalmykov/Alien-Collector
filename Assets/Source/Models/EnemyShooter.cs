@@ -1,7 +1,7 @@
 using GameLogic;
 using Interfaces;
 
-namespace Enemy
+namespace Models
 {
     public sealed class EnemyShooter : Shooter, IEnemyShooter
     {
