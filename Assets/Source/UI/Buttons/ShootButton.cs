@@ -6,7 +6,7 @@ namespace UI.Buttons
 {
     public abstract class ShootButton : GameButton
     {
-        [SerializeField] private ShootButton _shootButton;
+        [SerializeField] private CanvasGroup _background;
         
         [field: SerializeField] public ShootersDistributor ShootersDistributor { get; private set; }
         
@@ -27,19 +27,22 @@ namespace UI.Buttons
         protected override void OnClick()
         {
             Shoot();
-            
-            Button.interactable = false;
-            _shootButton.Button.interactable = false;
+            ChangeVisibility(false);
         }
 
         private void OnPlayerPrepared(IPlayerShooter playerShooter)
         {
             PlayerShooter = playerShooter;
-            
-            Button.interactable = true;
-            _shootButton.Button.interactable = true;
+            ChangeVisibility(true);
         }
 
+        private void ChangeVisibility(bool isEnabled)
+        {
+            _background.alpha = isEnabled ? 1 : 0;
+            _background.interactable = isEnabled;
+            _background.blocksRaycasts = isEnabled;
+        }
+        
         protected abstract void Shoot();
     }
 }
