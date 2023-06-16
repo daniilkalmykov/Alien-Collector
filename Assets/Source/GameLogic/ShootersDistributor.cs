@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Blinders;
 using Enemy;
 using Interfaces;
 using Player;
@@ -29,13 +30,25 @@ namespace GameLogic
         private void OnEnable()
         {
             foreach (var shooter in _shooters)
+            {
+                if (shooter.TryGetComponent(out HealthBlinder healthBlinder) == false)
+                    throw new ArgumentNullException();
+                
                 shooter.Shot += OnShot;
+                healthBlinder.Health.Died += OnDied;
+            }
         }
 
         private void OnDisable()
         {
             foreach (var shooter in _shooters)
+            {
+                if (shooter.TryGetComponent(out HealthBlinder healthBlinder) == false) 
+                    throw new ArgumentNullException();
+                
                 shooter.Shot -= OnShot;
+                healthBlinder.Health.Died -= OnDied;
+            }
         }
 
         private void Start()
@@ -46,6 +59,30 @@ namespace GameLogic
         public EnemyShooter GetRandomEnemy()
         {
             return (EnemyShooter)GetRandomShooter(_enemyShooters);
+        }
+
+        private void OnDied()
+        {
+            RemoveDeadShooter();
+        }
+
+        private void RemoveDeadShooter()
+        {
+            var deadShooter = _shooters.FirstOrDefault(shooter => shooter.gameObject.activeSelf == false);
+
+            switch (deadShooter)
+            {
+                case PlayerShooter playerShooter:
+                    _playerShooters.Remove(playerShooter);
+                    break;
+
+                case EnemyShooter enemyShooter:
+                    _enemyShooters.Remove(enemyShooter);
+                    break;
+
+                default:
+                    throw new ArgumentNullException();
+            }
         }
 
         private IShooter GetRandomShooter<T>(List<T> list)
@@ -75,7 +112,12 @@ namespace GameLogic
 
         private void FillShooters<T>(List<T> list)
         {
-            list.AddRange(_shooters.OfType<T>());
+            var shooters = _shooters.Where(shooter => shooter.gameObject.activeSelf).OfType<T>().ToList();
+
+            if (shooters.Count == 0)
+                return;
+            
+            list.AddRange(shooters);
         }
 
         private void SetNextEnemyShooter()

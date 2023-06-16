@@ -1,6 +1,5 @@
 using System;
 using Interfaces;
-using UnityEngine;
 
 namespace Models
 {
@@ -11,7 +10,10 @@ namespace Models
             MaxHealth = maxHealth;
             CurrentHealth = maxHealth;
         }
-        
+
+        public event Action Changed;
+        public event Action Died;
+
         public int CurrentHealth { get; private set; }
         public int MaxHealth { get; }
         
@@ -21,7 +23,10 @@ namespace Models
                 throw new ArgumentNullException();
 
             CurrentHealth -= damage;
-            Debug.Log(CurrentHealth);
+            Changed?.Invoke();
+
+            if (CurrentHealth <= 0)
+                Died?.Invoke();
         }
     }
 }
