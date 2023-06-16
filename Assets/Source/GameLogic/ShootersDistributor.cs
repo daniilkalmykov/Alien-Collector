@@ -132,6 +132,9 @@ namespace GameLogic
             if (_enemyShooters.Count == 0)
                 FillShooters(_enemyShooters);
 
+            if (_enemyShooters.Count == 0)
+                yield break;
+            
             _enemyShooters[0].Shoot(GetRandomPlayer().transform.position);
         }
 
