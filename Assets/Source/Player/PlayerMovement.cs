@@ -76,8 +76,8 @@ namespace Player
             }
             
             _animator.SetBool(AnimatorParameters.IsWalking, true);
-            
-            Move(Time.deltaTime);
+
+            Move(transform, Time.deltaTime);
         }
 
         public void InitTargetSetter(MoveCube moveCube)
@@ -85,11 +85,12 @@ namespace Player
             TargetSetter = new PlayerTargetSetter(_startTarget, moveCube);
         }
         
-        public void Move(float deltaTime)
+        public void Move(Transform currentTransform, float deltaTime)
         {
             var targetPosition = TargetSetter.CurrentTarget.transform.position;
-            
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, Speed * deltaTime);
+
+            currentTransform.position =
+                Vector3.MoveTowards(currentTransform.position, targetPosition, Speed * deltaTime);
         }
         
         public void ResetSpeed()

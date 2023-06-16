@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace GameLogic
 {
-    public sealed class Bootstrap : MonoBehaviour
+    public sealed class MovementMapBootstrap : MonoBehaviour
     {
         [SerializeField] private MoveCubeBlinder _moveCubeBlinder;
         [SerializeField] private MovesCountsView _movesCountsView;

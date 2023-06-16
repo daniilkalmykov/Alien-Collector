@@ -1,9 +1,11 @@
+using UnityEngine;
+
 namespace Interfaces
 {
     public interface IMoveable
     {
         float Speed { get; }
         
-        void Move(float deltaTime);
+        void Move(Transform currentTransform, float deltaTime);
     }
 }
