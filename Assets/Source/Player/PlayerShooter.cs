@@ -5,5 +5,6 @@ namespace Player
 {
     public sealed class PlayerShooter : Shooter, IPlayerShooter
     {
+        
     }
 }
