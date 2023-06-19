@@ -23,6 +23,7 @@ namespace UI.Bars
         private void OnDisable()
         {
             _health.Changed -= OnChanged;
+            _health.Died -= OnDied;
         }
 
         private void Start()
@@ -35,6 +36,15 @@ namespace UI.Bars
             _health = health;
             
             _health.Changed += OnChanged;
+            _health.Died += OnDied;
+        }
+
+        private void OnDied()
+        {
+            if (_coroutine != null) 
+                StopCoroutine(_coroutine);
+
+            _coroutine = StartCoroutine(ChangeSliderValue(0));
         }
 
         private void SetStartValues(int maxValue)

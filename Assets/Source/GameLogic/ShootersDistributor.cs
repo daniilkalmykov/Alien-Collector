@@ -68,7 +68,19 @@ namespace GameLogic
 
         private void RemoveDeadShooter()
         {
-            var deadShooter = _shooters.FirstOrDefault(shooter => shooter.gameObject.activeSelf == false);
+            Shooter deadShooter = null
+                ;
+            foreach (var shooter in _shooters)
+            {
+                if (shooter.gameObject.TryGetComponent(out HealthBlinder healthBlinder) == false)
+                    throw new ArgumentNullException();
+
+                if (healthBlinder.Health.CurrentHealth > 0)
+                    continue;
+                
+                deadShooter = shooter;
+                break;
+            }
 
             switch (deadShooter)
             {
@@ -79,9 +91,6 @@ namespace GameLogic
                 case EnemyShooter enemyShooter:
                     _enemyShooters.Remove(enemyShooter);
                     break;
-
-                default:
-                    throw new ArgumentNullException();
             }
         }
 
@@ -112,7 +121,17 @@ namespace GameLogic
 
         private void FillShooters<T>(List<T> list)
         {
-            var shooters = _shooters.Where(shooter => shooter.gameObject.activeSelf).OfType<T>().ToList();
+            var shooters = _shooters.Where(shooter =>
+            {
+                if (shooter.TryGetComponent(out HealthBlinder healthBlinder) == false) 
+                    throw new ArgumentNullException();
+                
+                if (healthBlinder.Health == null)
+                    return true;
+                    
+                return healthBlinder.Health.CurrentHealth > 0;
+
+            }).OfType<T>().ToList();
 
             if (shooters.Count == 0)
                 return;

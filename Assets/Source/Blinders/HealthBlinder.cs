@@ -18,20 +18,5 @@ namespace Blinders
             
             _healthBar.Init(Health);
         }
-
-        private void OnEnable()
-        {
-            Health.Died += OnDied;
-        }
-
-        private void OnDisable()
-        {
-            Health.Died -= OnDied;
-        }
-        
-        private void OnDied()
-        {
-            gameObject.SetActive(false);
-        }
     }
 }

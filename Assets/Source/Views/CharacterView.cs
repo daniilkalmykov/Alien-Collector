@@ -2,6 +2,7 @@ using Blinders;
 using Constants;
 using GameLogic;
 using Interfaces;
+using UI.Bars;
 using UnityEngine;
 
 namespace Views
@@ -9,6 +10,8 @@ namespace Views
     [RequireComponent(typeof(Shooter), typeof(Animator), typeof(HealthBlinder))]
     public sealed class CharacterView : MonoBehaviour
     {
+        [SerializeField] private HealthBar _healthBar;
+        
         private IShooter _shooter;
         private HealthBlinder _healthBlinder;
         private Animator _animator;
@@ -30,6 +33,7 @@ namespace Views
         {
             _shooter.Shot -= OnShot;
             _health.Changed -= OnChanged;
+            _health.Died -= OnDied;
         }
 
         private void Start()
@@ -37,6 +41,18 @@ namespace Views
             _health = _healthBlinder.Health;
             
             _health.Changed += OnChanged;
+            _health.Died += OnDied;
+        }
+
+        public void TurnOff()
+        {
+            _healthBar.gameObject.SetActive(false);
+            gameObject.SetActive(false);
+        }
+        
+        private void OnDied()
+        {
+            _animator.SetTrigger(AnimatorParameters.Die);
         }
 
         private void OnChanged()

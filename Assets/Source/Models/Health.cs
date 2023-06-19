@@ -23,10 +23,14 @@ namespace Models
                 throw new ArgumentNullException();
 
             CurrentHealth -= damage;
-            Changed?.Invoke();
 
             if (CurrentHealth <= 0)
+            {
                 Died?.Invoke();
+                return;
+            }
+            
+            Changed?.Invoke();
         }
     }
 }
