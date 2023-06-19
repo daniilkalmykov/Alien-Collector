@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Blinders;
 using Interfaces;
 using UnityEngine;
@@ -12,12 +13,19 @@ namespace GameLogic
         [field: SerializeField] public BulletBlinder BulletBlinder { get; private set; }
         [field: SerializeField] public Transform BulletSpawnPoint { get; private set; }
         
+        public Vector3 Target { get; private set; }
+
         public void Shoot(Vector3 target)
         {
-            var bulletBlinder = Instantiate(BulletBlinder, BulletSpawnPoint.position, Quaternion.identity);
-            bulletBlinder.Init(target);
-
+            Target = target;
+            
             Shot?.Invoke(this);
+        }
+
+        public void SpawnBullet()
+        {
+            var bulletBlinder = Instantiate(BulletBlinder, BulletSpawnPoint.position, Quaternion.identity);
+            bulletBlinder.Init(Target);
         }
     }
 }

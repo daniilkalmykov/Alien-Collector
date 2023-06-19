@@ -6,11 +6,12 @@ namespace Interfaces
 {
     public interface IShooter
     {
-        BulletBlinder BulletBlinder { get; }
-        Transform BulletSpawnPoint { get; }
-
         event Action<IShooter> Shot;
         
+        BulletBlinder BulletBlinder { get; }
+        Transform BulletSpawnPoint { get; }
+        Vector3 Target { get; }
+
         void Shoot(Vector3 target);
     }
 }

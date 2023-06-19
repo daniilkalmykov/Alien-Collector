@@ -17,12 +17,14 @@ namespace Models
             Speed = speed;
         }
 
-        public float Speed { get; private set; }
+        public float Speed { get; }
         
         public void Move(Transform currentTransform, float deltaTime)
         {
-            currentTransform.position =
-                Vector3.MoveTowards(currentTransform.position, _target, Speed * Time.deltaTime);
+            const float YPosition = 2;
+            var target = new Vector3(_target.x, YPosition, _target.z);
+
+            currentTransform.position = Vector3.MoveTowards(currentTransform.position, target, Speed * Time.deltaTime);
         }
 
         public void Update(float deltaTime)
