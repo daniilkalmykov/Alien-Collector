@@ -6,6 +6,8 @@ namespace GameLogic
     [RequireComponent(typeof(BulletBlinder))]
     public sealed class BulletCollisionsHandler : MonoBehaviour
     {
+        [SerializeField] private ParticleSystem _hit;
+        
         private BulletBlinder _bulletBlinder;
 
         private void Awake()
@@ -16,7 +18,10 @@ namespace GameLogic
         private void OnCollisionEnter(Collision other)
         {
             if (other.gameObject.TryGetComponent(out HealthBlinder healthBlinder))
+            {
+                Instantiate(_hit, transform.position, Quaternion.identity, null);
                 _bulletBlinder.DamageCauser.Cause(healthBlinder.Health);
+            }
             
             Destroy(gameObject);
         }
