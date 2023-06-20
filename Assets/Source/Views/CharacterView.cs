@@ -11,6 +11,7 @@ namespace Views
     public sealed class CharacterView : MonoBehaviour
     {
         [SerializeField] private HealthBar _healthBar;
+        [SerializeField] private ParticleSystem _particleSystem;
         
         private IShooter _shooter;
         private HealthBlinder _healthBlinder;
@@ -44,10 +45,10 @@ namespace Views
             _health.Died += OnDied;
         }
 
-        public void TurnOff()
+        public void TurnOffBar()
         {
+            _particleSystem.gameObject.SetActive(false);
             _healthBar.gameObject.SetActive(false);
-            gameObject.SetActive(false);
         }
         
         private void OnDied()
