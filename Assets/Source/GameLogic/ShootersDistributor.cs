@@ -30,13 +30,7 @@ namespace GameLogic
         private void OnEnable()
         {
             foreach (var shooter in _shooters)
-            {
-                if (shooter.TryGetComponent(out HealthBlinder healthBlinder) == false)
-                    throw new ArgumentNullException();
-                
                 shooter.Shot += OnShot;
-                healthBlinder.Health.Died += OnDied;
-            }
         }
 
         private void OnDisable()
@@ -56,6 +50,17 @@ namespace GameLogic
             PlayerPrepared?.Invoke(GetRandomPlayer());
         }
 
+        public void Init()
+        {
+            foreach (var shooter in _shooters)
+            {
+                if (shooter.TryGetComponent(out HealthBlinder healthBlinder) == false)
+                    throw new ArgumentNullException();
+                
+                healthBlinder.Health.Died += OnDied;
+            }
+        }
+
         public EnemyShooter GetRandomEnemy()
         {
             return (EnemyShooter)GetRandomShooter(_enemyShooters);
@@ -68,8 +73,8 @@ namespace GameLogic
 
         private void RemoveDeadShooter()
         {
-            Shooter deadShooter = null
-                ;
+            Shooter deadShooter = null;
+            
             foreach (var shooter in _shooters)
             {
                 if (shooter.gameObject.TryGetComponent(out HealthBlinder healthBlinder) == false)

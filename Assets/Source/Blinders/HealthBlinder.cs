@@ -12,7 +12,7 @@ namespace Blinders
 
         public IHealth Health { get; private set; }
 
-        private void Awake()
+        public void Init()
         {
             Health = new Health(_maxHealth);
             
