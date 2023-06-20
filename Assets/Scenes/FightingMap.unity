@@ -6159,7 +6159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8e776b023d436ca9932745a7773310, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 100
+  _maxHealth: 60
   _healthBar: {fileID: 1574048308}
 --- !u!114 &1087179874
 MonoBehaviour:
@@ -10865,7 +10865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d01cf69c27bb4dbaba4e9de48e2c116e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <BulletBlinder>k__BackingField: {fileID: 4952311626808724414, guid: 782e8b84c79f72640a2b4402bded1434, type: 3}
+  <BulletBlinder>k__BackingField: {fileID: 4952311626808724414, guid: 1bb74ad5904d6d44c854f86bb475fbf2, type: 3}
   <BulletSpawnPoint>k__BackingField: {fileID: 81513793}
 --- !u!114 &1997387220
 MonoBehaviour:
